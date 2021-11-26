@@ -1,7 +1,7 @@
 {
-    "name": "nticaric/fiskalizacija",
+    "name": "baitella/fiskalizacija",
     "description": "PHP API za fiskalizaciju računa",
-    "homepage": "http://github.com/nticaric/fiskalizacija",
+    "homepage": "http://github.com/baitella/fiskalizacija",
     "license": "MIT",
     "type": "library",
     "authors": [{
@@ -9,7 +9,7 @@
         "email": "nticaric@gmail.com"
     }],
     "require": {
-        "php": ">=5.3.0",
+        "php": ">=7.4.0",
         "nesbot/carbon": "~1.0"
     },
     "require-dev": {
