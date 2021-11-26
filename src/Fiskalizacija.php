@@ -1,4 +1,6 @@
-<?php namespace Nticaric\Fiskalizacija;
+<?php
+
+namespace Nticaric\Fiskalizacija;
 
 /**
  *
@@ -15,10 +17,9 @@ use Exception;
 
 class Fiskalizacija
 {
-
     public $certificate;
-    private $security;
-    private $url = "https://cis.porezna-uprava.hr:8449/FiskalizacijaService";
+    private string $security;
+    private string $url = "https://cis.porezna-uprava.hr:8449/FiskalizacijaService";
 
     public function __construct($path, $pass, $security = 'SSL', $demo = false)
     {
@@ -93,7 +94,13 @@ class Fiskalizacija
         $SignedInfoNode = $XMLRequestDOMDoc->getElementsByTagName('SignedInfo')->item(0);
 
         $X509Issuer = $this->publicCertificateData['issuer'];
-        $X509IssuerName = sprintf('OU=%s,O=%s,C=%s', $X509Issuer['OU'], $X509Issuer['O'], $X509Issuer['C']);
+        if (isset($X509Issuer['OU'])) {
+            $X509IssuerName = sprintf('OU=%s,O=%s,C=%s', $X509Issuer['OU'], $X509Issuer['O'], $X509Issuer['C']);
+        } elseif (isset($X509Issuer['CN'])) {
+            $X509IssuerName = sprintf('O=%s,C=%s,CN=%s', $X509Issuer['O'], $X509Issuer['C'], $X509Issuer['CN']);
+        } else {
+            $X509IssuerName = sprintf('OU=%s,O=%s,C=%s', $X509Issuer['OU'], $X509Issuer['O'], $X509Issuer['C']);
+        }
         $X509IssuerSerial = $this->publicCertificateData['serialNumber'];
 
         $publicCertificatePureString = str_replace('-----BEGIN CERTIFICATE-----', '', $this->certificate['cert']);
@@ -198,9 +205,7 @@ class Fiskalizacija
             return $this->parseResponse($response, $code);
         } else {
             throw new Exception(curl_error($ch));
-            curl_close($ch);
         }
-
     }
 
     public function parseResponse($response, $code = 4)
