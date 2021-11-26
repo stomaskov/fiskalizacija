@@ -127,6 +127,16 @@ class Fiskalizacija
         $X509IssuerNameNode = new DOMElement('X509IssuerName', $X509IssuerName);
         $X509IssuerSerialNode->appendChild($X509IssuerNameNode);
 
+        // X509SerialNumber integer overflow fix
+        if (substr($X509IssuerSerial, 0, 2) === '0x') {
+            $hex = substr($X509IssuerSerial, 2);
+            $newX509IssuerSerial = '';
+            $len = strlen($hex);
+            for ($i = 1; $i <= $len; $i++) {
+                $newX509IssuerSerial = bcadd($newX509IssuerSerial, bcmul(strval(hexdec($hex[$i - 1])), bcpow('16', strval($len - $i))));
+            }
+            $X509IssuerSerial = $newX509IssuerSerial;
+        }
         $X509SerialNumberNode = new DOMElement('X509SerialNumber', $X509IssuerSerial);
         $X509IssuerSerialNode->appendChild($X509SerialNumberNode);
 
