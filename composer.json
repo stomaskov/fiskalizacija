@@ -10,7 +10,10 @@
     }],
     "require": {
         "php": ">=7.4.0",
-        "nesbot/carbon": "~1.0"
+        "nesbot/carbon": "~1.0",
+        "ext-dom": "*",
+        "ext-openssl": "*",
+        "ext-curl": "*"
     },
     "require-dev": {
         "mockery/mockery": "~0.9",
