@@ -5,3 +5,4 @@ tests/democacert.cer
 tests/democacert.cer.pem
 coverage
 build/logs
+.idea
