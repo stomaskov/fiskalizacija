@@ -10,22 +10,23 @@ use Nticaric\Fiskalizacija\Business\Address;
 use Nticaric\Fiskalizacija\Business\AddressData;
 use Nticaric\Fiskalizacija\Business\BusinessArea;
 use Nticaric\Fiskalizacija\Business\BusinessAreaRequest;
-use Nticaric\Fiskalizacija\Fiskalizacija;
 
-class FiskalizacijaTest extends \PHPUnit_Framework_TestCase
+class FiskalizacijaTest extends \PHPUnit\Framework\TestCase
 {
-    public function config()
+    public function config(): array
     {
         return [
-            'certificatePath' => "./path/to/demo.pfx",
-            'password'        => "password",
+            'path' => "",
+            'pass' => "",
+            'security' => 'TLS',
+            'demo' => true,
         ];
     }
 
     public function mockFiskalizacijaClass()
     {
         $mock = $this->getMockBuilder('Nticaric\Fiskalizacija\Fiskalizacija')
-            ->setMethods(['readCertificateFromDisk', 'signXML', 'sendSoap', 'getPrivateKey'])
+            ->onlyMethods(['readCertificateFromDisk', 'signXML', 'sendSoap', 'getPrivateKey'])
             ->setConstructorArgs($this->config())
             ->getMock();
 
@@ -112,7 +113,7 @@ class FiskalizacijaTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('RacunOdgovor', $res);
     }
 
-    public function setBillRequest()
+    public function setBillRequest(): BillRequest
     {
         $refund = new Refund("Naziv naknade", 5.44);
 
@@ -163,11 +164,10 @@ class FiskalizacijaTest extends \PHPUnit_Framework_TestCase
         );
         $bill->setNoteOfRedelivary(false);
 
-        $billRequest = new BillRequest($bill);
-        return $billRequest;
+        return new BillRequest($bill);
     }
 
-    public function setBusinessAreaRequest()
+    public function setBusinessAreaRequest(): BusinessAreaRequest
     {
         $address              = new Address;
         $address->street      = "Sv. Mateja";
@@ -191,19 +191,16 @@ class FiskalizacijaTest extends \PHPUnit_Framework_TestCase
         $businessArea->setSpecificPurpose("spec namjena");
 
         $businessArea->setWorkingTime("Pon:08-11h Uto:15-17");
-        $businessAreaRequest = new BusinessAreaRequest($businessArea);
 
-        return $businessAreaRequest;
+        return new BusinessAreaRequest($businessArea);
     }
 
-    /**
-     * @expectedException Exception
-     * @expectedExceptionMessage Ne mogu procitati certifikat sa lokacije:
-     */
     public function testReadCertificateFromDiskException()
     {
+        $this->expectExceptionMessage("Ne mogu procitati certifikat sa lokacije:");
+        $this->expectException(Exception::class);
         $fis = $this->getMockBuilder('Nticaric\Fiskalizacija\Fiskalizacija')
-            ->setMethods(null)
+            ->onlyMethods(null)
             ->setConstructorArgs($this->config())
             ->getMock();
     }

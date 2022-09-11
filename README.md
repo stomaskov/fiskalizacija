@@ -3,6 +3,8 @@ Fiskalizacija
 [![Build Status](https://travis-ci.org/nticaric/fiskalizacija.svg?branch=master)](https://travis-ci.org/nticaric/fiskalizacija)
 [![Total Downloads](https://img.shields.io/packagist/dt/nticaric/fiskalizacija.svg)](https://packagist.org/packages/nticaric/fiskalizacija)
 
+Fork od _baitella/fiskalizacija_ koji je fork od _nticaric/fiskalizacija_.
+
 PHP API za fiskalizaciju računa u Hrvatskoj
 
 ### Primjer računa:

@@ -1,10 +1,11 @@
 <?php
+namespace Business;
 
 use Nticaric\Fiskalizacija\Business\Address;
 use Nticaric\Fiskalizacija\Business\AddressData;
 use Nticaric\Fiskalizacija\Business\BusinessArea;
 
-class BusinessAreaTest extends \PHPUnit_Framework_TestCase
+class BusinessAreaTest extends \PHPUnit\Framework\TestCase
 {
     public function testBusinessAreaClass()
     {

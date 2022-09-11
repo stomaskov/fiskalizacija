@@ -1,9 +1,10 @@
 <?php
+namespace Business;
 
 use Nticaric\Fiskalizacija\Business\Address;
 use Nticaric\Fiskalizacija\Business\AddressData;
 
-class AddressDataTest extends \PHPUnit_Framework_TestCase
+class AddressDataTest extends \PHPUnit\Framework\TestCase
 {
     public function testAddressClass()
     {
