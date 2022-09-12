@@ -1,8 +1,9 @@
 <?php
+namespace Bill;
 
 use Nticaric\Fiskalizacija\Bill\TaxRate;
 
-class TaxRateTest extends \PHPUnit_Framework_TestCase
+class TaxRateTest extends \PHPUnit\Framework\TestCase
 {
     public function testTaxRateClass()
     {

@@ -1,8 +1,9 @@
 <?php
+namespace Bill;
 
 use Nticaric\Fiskalizacija\Bill\Refund;
 
-class RefundTest extends \PHPUnit_Framework_TestCase
+class RefundTest extends \PHPUnit\Framework\TestCase
 {
     public function testRefundClass()
     {

@@ -8,7 +8,7 @@ class Request
     protected $requestName;
     protected $request;
 
-    public function generateUUID()
+    public function generateUUID(): string
     {
         return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
             mt_rand(0, 0xffff), mt_rand(0, 0xffff),
@@ -19,7 +19,7 @@ class Request
         );
     }
 
-    public function toXML()
+    public function toXML(): string
     {
         $ns = 'tns';
 

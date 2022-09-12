@@ -14,12 +14,16 @@ namespace Nticaric\Fiskalizacija;
 use DOMDocument;
 use DOMElement;
 use Exception;
+use InvalidArgumentException;
+use OpenSSLAsymmetricKey;
 
 class Fiskalizacija
 {
-    public $certificate;
+    public array $certificate;
     private string $security;
     private string $url = "https://cis.porezna-uprava.hr:8449/FiskalizacijaService";
+    private OpenSSLAsymmetricKey|false $privateKeyResource;
+    private array|false $publicCertificateData;
 
     public function __construct($path, $pass, $security = 'SSL', $demo = false)
     {
@@ -42,7 +46,7 @@ class Fiskalizacija
     {
         $cert = @file_get_contents($path);
         if (false === $cert) {
-            throw new \Exception("Ne mogu procitati certifikat sa lokacije: " .
+            throw new Exception("Ne mogu procitati certifikat sa lokacije: " .
                 $path, 1);
         }
         return $cert;
@@ -53,7 +57,7 @@ class Fiskalizacija
         return $this->certificate['pkey'];
     }
 
-    public function signXML($XMLRequest)
+    public function signXML($XMLRequest): bool|string
     {
         $XMLRequestDOMDoc = new DOMDocument();
         $XMLRequestDOMDoc->loadXML($XMLRequest);
@@ -128,7 +132,7 @@ class Fiskalizacija
         $X509IssuerSerialNode->appendChild($X509IssuerNameNode);
 
         // X509SerialNumber integer overflow fix
-        if (substr($X509IssuerSerial, 0, 2) === '0x') {
+        if (str_starts_with($X509IssuerSerial, '0x')) {
             $hex = substr($X509IssuerSerial, 2);
             $newX509IssuerSerial = '';
             $len = strlen($hex);
@@ -200,7 +204,7 @@ class Fiskalizacija
                 curl_setopt($ch, CURLOPT_SSLVERSION, 6);
                 break;
             default:
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     'Treći parametar konstruktora klase Fiskalizacija mora biti SSL ili TLS!'
                 );
         }

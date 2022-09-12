@@ -1,4 +1,5 @@
 <?php
+namespace Business;
 
 use Carbon\Carbon;
 use Nticaric\Fiskalizacija\Business\Address;
@@ -6,7 +7,7 @@ use Nticaric\Fiskalizacija\Business\AddressData;
 use Nticaric\Fiskalizacija\Business\BusinessArea;
 use Nticaric\Fiskalizacija\Business\BusinessAreaRequest;
 
-class BusinessAreaRequestTest extends \PHPUnit_Framework_TestCase
+class BusinessAreaRequestTest extends \PHPUnit\Framework\TestCase
 {
     public function testBusinessAreaRequestClass()
     {
@@ -34,7 +35,7 @@ class BusinessAreaRequestTest extends \PHPUnit_Framework_TestCase
         $businessArea->setWorkingTime("Pon:08-11h Uto:15-17");
         $businessAreaRequest = new BusinessAreaRequest($businessArea);
 
-        $xml = new DOMDocument();
+        $xml = new \DOMDocument();
         $xml->loadXML($businessAreaRequest->toXML());
 
         $res = $xml->schemaValidate('./src/schema/FiskalizacijaSchema.xsd');

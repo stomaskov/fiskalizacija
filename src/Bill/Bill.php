@@ -149,7 +149,7 @@ class Bill
      * @param  [type] $uir  ukupni iznos računa
      * @return [type]       md5 hash
      */
-    public function securityCode($pkey, $oib, $dt, $bor, $opp, $onu, $uir)
+    public function securityCode($pkey, $oib, $dt, $bor, $opp, $onu, $uir): string
     {
         $medjurezultat = "";
         $medjurezultat .= $oib;
