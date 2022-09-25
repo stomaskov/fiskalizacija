@@ -38,8 +38,10 @@ class Fiskalizacija
 
     public function setCertificate($path, $pass)
     {
+        $certificate = null;
         $pkcs12 = $this->readCertificateFromDisk($path);
-        openssl_pkcs12_read($pkcs12, $this->certificate, $pass);
+        openssl_pkcs12_read($pkcs12, $certificate, $pass);
+        $this->certificate = $certificate;
     }
 
     public function readCertificateFromDisk($path)
@@ -111,10 +113,12 @@ class Fiskalizacija
         $publicCertificatePureString = str_replace('-----END CERTIFICATE-----', '', $publicCertificatePureString);
 
         $this->signedInfoSignature = null;
+        $signedInfoSignature = null;
 
-        if (!openssl_sign($SignedInfoNode->C14N(true), $this->signedInfoSignature, $this->privateKeyResource, OPENSSL_ALGO_SHA1)) {
+        if (!openssl_sign($SignedInfoNode->C14N(true), $signedInfoSignature, $this->privateKeyResource, OPENSSL_ALGO_SHA1)) {
             throw new Exception('Unable to sign the request');
         }
+        $this->signedInfoSignature = $signedInfoSignature;
 
         $SignatureNode = $XMLRequestDOMDoc->getElementsByTagName('Signature')->item(0);
         $SignatureValueNode = new DOMElement('SignatureValue', base64_encode($this->signedInfoSignature));
@@ -242,4 +246,8 @@ class Fiskalizacija
 
     }
 
+    public function getUrl()
+    {
+        return $this->url;
+    }
 }
