@@ -38,7 +38,7 @@ class Fiskalizacija
 
     public function setCertificate($path, $pass)
     {
-        $certificate = null;
+        $certificate = [];
         $pkcs12 = $this->readCertificateFromDisk($path);
         openssl_pkcs12_read($pkcs12, $certificate, $pass);
         $this->certificate = $certificate;
@@ -228,11 +228,21 @@ class Fiskalizacija
 
     public function parseResponse($response, $code = 4)
     {
+        $DOMResponse = new DOMDocument();
+        $DOMResponse->loadXML($response);
         if ($code === 200) {
-            return $response;
+
+            $uuid = $DOMResponse->getElementsByTagName('IdPoruke')->item(0)->nodeValue;
+            $dateTime = $DOMResponse->getElementsByTagName('DatumVrijeme')->item(0)->nodeValue;
+            $jir = $DOMResponse->getElementsByTagName('Jir')->item(0)->nodeValue;
+            return [
+                'header' => [
+                    'uuid' => $uuid,
+                    'dateTime' => $dateTime,
+                ],
+                'jir' => $jir
+            ];
         } else {
-            $DOMResponse = new DOMDocument();
-            $DOMResponse->loadXML($response);
 
             $SifraGreske = $DOMResponse->getElementsByTagName('SifraGreske')->item(0);
             $PorukaGreske = $DOMResponse->getElementsByTagName('PorukaGreske')->item(0);
