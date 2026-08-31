@@ -19,11 +19,26 @@ use OpenSSLAsymmetricKey;
 
 class Fiskalizacija
 {
+    /**
+     * Seconds allowed for the whole CIS round trip.
+     *
+     * Was 5, which is the dangerous kind of too-short: when it fires on a reply that is
+     * already on the wire, CIS has recorded the receipt and issued a JIR that the caller
+     * never receives. The caller then re-sends the same receipt number and CIS issues a
+     * second JIR for it. Give the service room to answer instead.
+     */
+    public const DEFAULT_TIMEOUT = 30;
+
+    /** Seconds allowed to establish the connection. Failing to connect is cheap to retry. */
+    public const DEFAULT_CONNECT_TIMEOUT = 10;
+
     public array $certificate;
     private string $security;
     private string $url = "https://cis.porezna-uprava.hr:8449/FiskalizacijaService";
     private OpenSSLAsymmetricKey|false $privateKeyResource;
     private array|false $publicCertificateData;
+    private int $timeout = self::DEFAULT_TIMEOUT;
+    private int $connectTimeout = self::DEFAULT_CONNECT_TIMEOUT;
 
     public function __construct($path, $pass, $security = 'SSL', $demo = false)
     {
@@ -185,14 +200,29 @@ class Fiskalizacija
         return $envelope->saveXML();
     }
 
-    public function sendSoap($payload)
+    /**
+     * Override the CIS timeouts, in seconds. Callers run under their own schedules and
+     * lock windows, so this is tunable without a package release.
+     */
+    public function setTimeouts(int $timeout, ?int $connectTimeout = null): void
     {
-        $ch = curl_init();
+        $this->timeout = $timeout;
 
-        $options = array(
+        if ($connectTimeout !== null) {
+            $this->connectTimeout = $connectTimeout;
+        }
+    }
+
+    /**
+     * The curl options for one CIS request. Separate from sendSoap() so the transport
+     * settings can be asserted without making a network call.
+     */
+    public function curlOptions($payload): array
+    {
+        return array(
             CURLOPT_URL => $this->url,
-            CURLOPT_CONNECTTIMEOUT => 5,
-            CURLOPT_TIMEOUT => 5,
+            CURLOPT_CONNECTTIMEOUT => $this->connectTimeout,
+            CURLOPT_TIMEOUT => $this->timeout,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $payload,
@@ -200,6 +230,13 @@ class Fiskalizacija
             CURLOPT_SSL_VERIFYPEER => false,
             //CURLOPT_CAINFO => './tests/democacert.cer.pem',
         );
+    }
+
+    public function sendSoap($payload)
+    {
+        $ch = curl_init();
+
+        $options = $this->curlOptions($payload);
 
         switch ($this->security) {
             case 'SSL':
@@ -221,9 +258,17 @@ class Fiskalizacija
         if ($response) {
             curl_close($ch);
             return $this->parseResponse($response, $code);
-        } else {
-            throw new Exception(curl_error($ch));
         }
+
+        // Typed, and carrying the curl error code, so the caller can tell a request that
+        // provably never reached CIS from one that may have been accepted before the
+        // connection failed. Re-sending the latter is what mints a second JIR for one
+        // receipt. curl_error()/curl_errno() must both be read before curl_close().
+        $error = curl_error($ch);
+        $errno = curl_errno($ch);
+        curl_close($ch);
+
+        throw new TransportException($error, $errno);
     }
 
     public function parseResponse($response, $code = 4)

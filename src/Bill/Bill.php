@@ -151,11 +151,16 @@ class Bill
      */
     public function securityCode($pkey, $oib, $dt, $bor, $opp, $onu, $uir): string
     {
+        // Order is per "Fiskalizacija - Tehnicka specifikacija za korisnike", 12.1:
+        // oib + datVrijeme + brOznRac + oznPosPr + oznNapUr + iznosUkupno.
+        // This used to append $opp before $bor - transposed against both the spec and this
+        // method's own parameter names. CIS copies the ZKI out of the request instead of
+        // recomputing it, so every receipt signed that way was accepted and nobody noticed.
         $medjurezultat = "";
         $medjurezultat .= $oib;
         $medjurezultat .= $dt;
-        $medjurezultat .= $opp;
         $medjurezultat .= $bor;
+        $medjurezultat .= $opp;
         $medjurezultat .= $onu;
         $medjurezultat .= $uir;
 
