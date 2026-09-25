@@ -80,7 +80,7 @@ class Fiskalizacija
         $XMLRequestDOMDoc->loadXML($XMLRequest);
 
         $canonical = $XMLRequestDOMDoc->C14N();
-        $DigestValue = base64_encode(hash('sha1', $canonical, true));
+        $DigestValue = base64_encode(hash('sha256', $canonical, true));
 
         $rootElem = $XMLRequestDOMDoc->documentElement;
 
@@ -94,7 +94,7 @@ class Fiskalizacija
         $CanonicalizationMethodNode->setAttribute('Algorithm', 'http://www.w3.org/2001/10/xml-exc-c14n#');
 
         $SignatureMethodNode = $SignedInfoNode->appendChild(new DOMElement('SignatureMethod'));
-        $SignatureMethodNode->setAttribute('Algorithm', 'http://www.w3.org/2000/09/xmldsig#rsa-sha1');
+        $SignatureMethodNode->setAttribute('Algorithm', 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256');
 
         $ReferenceNode = $SignedInfoNode->appendChild(new DOMElement('Reference'));
         $ReferenceNode->setAttribute('URI', sprintf('#%s', $XMLRequestDOMDoc->documentElement->getAttribute('Id')));
@@ -108,7 +108,7 @@ class Fiskalizacija
         $Transform2Node->setAttribute('Algorithm', 'http://www.w3.org/2001/10/xml-exc-c14n#');
 
         $DigestMethodNode = $ReferenceNode->appendChild(new DOMElement('DigestMethod'));
-        $DigestMethodNode->setAttribute('Algorithm', 'http://www.w3.org/2000/09/xmldsig#sha1');
+        $DigestMethodNode->setAttribute('Algorithm', 'http://www.w3.org/2001/04/xmlenc#sha256');
 
         $ReferenceNode->appendChild(new DOMElement('DigestValue', $DigestValue));
 
@@ -130,7 +130,7 @@ class Fiskalizacija
         $this->signedInfoSignature = null;
         $signedInfoSignature = null;
 
-        if (!openssl_sign($SignedInfoNode->C14N(true), $signedInfoSignature, $this->privateKeyResource, OPENSSL_ALGO_SHA1)) {
+        if (!openssl_sign($SignedInfoNode->C14N(true), $signedInfoSignature, $this->privateKeyResource, OPENSSL_ALGO_SHA256)) {
             throw new Exception('Unable to sign the request');
         }
         $this->signedInfoSignature = $signedInfoSignature;

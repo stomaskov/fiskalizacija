@@ -91,13 +91,13 @@ class SecurityCodeTest extends \PHPUnit\Framework\TestCase
         $this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $actual);
     }
 
-    /** RSA-SHA1 over the §12.1 payload, MD5 of the raw signature. */
+    /** RSA-SHA256 over the §12.1 payload, MD5 of the raw signature. */
     private function expectedZki(string $privateKey): string
     {
         $payload = self::OIB . self::DT . self::BOR . self::OPP . self::ONU . self::TOTAL;
 
         $signature = null;
-        openssl_sign($payload, $signature, $privateKey, OPENSSL_ALGO_SHA1);
+        openssl_sign($payload, $signature, $privateKey, OPENSSL_ALGO_SHA256);
 
         return md5($signature);
     }

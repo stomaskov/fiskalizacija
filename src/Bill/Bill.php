@@ -166,7 +166,7 @@ class Bill
 
         $zastKodSignature = null;
 
-        if (!openssl_sign($medjurezultat, $zastKodSignature, $pkey, OPENSSL_ALGO_SHA1)) {
+        if (!openssl_sign($medjurezultat, $zastKodSignature, $pkey, OPENSSL_ALGO_SHA256)) {
             throw new \Exception('Error creating security code');
         }
 
