@@ -264,11 +264,14 @@ class Fiskalizacija
         // provably never reached CIS from one that may have been accepted before the
         // connection failed. Re-sending the latter is what mints a second JIR for one
         // receipt. curl_error()/curl_errno() must both be read before curl_close().
+        // The request size is what separates a timeout before anything was sent from one
+        // during the reply, since curl reports both as the same errno; see TransportException.
         $error = curl_error($ch);
         $errno = curl_errno($ch);
+        $requestSize = curl_getinfo($ch, CURLINFO_REQUEST_SIZE);
         curl_close($ch);
 
-        throw new TransportException($error, $errno);
+        throw new TransportException($error, $errno, is_int($requestSize) ? $requestSize : null);
     }
 
     public function parseResponse($response, $code = 4)
