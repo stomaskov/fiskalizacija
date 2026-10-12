@@ -220,9 +220,9 @@ class Bill
         }
         /*********************************************/
 
-        $writer->writeElementNs($ns, 'IznosOslobPdv', null, number_format($this->taxFreeValuePdv, 2, '.', ''));
-        $writer->writeElementNs($ns, 'IznosMarza', null, number_format($this->marginForTaxRate, 2, '.', ''));
-        $writer->writeElementNs($ns, 'IznosNePodlOpor', null, number_format($this->taxFreeValue, 2, '.', ''));
+        $writer->writeElementNs($ns, 'IznosOslobPdv', null, number_format((float) $this->taxFreeValuePdv, 2, '.', ''));
+        $writer->writeElementNs($ns, 'IznosMarza', null, number_format((float) $this->marginForTaxRate, 2, '.', ''));
+        $writer->writeElementNs($ns, 'IznosNePodlOpor', null, number_format((float) $this->taxFreeValue, 2, '.', ''));
 
         /*********** Naknada *************************/
         if (!empty($this->refund)) {

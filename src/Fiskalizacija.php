@@ -38,6 +38,7 @@ class Fiskalizacija
     private OpenSSLAsymmetricKey|false $privateKeyResource;
     private array|false $publicCertificateData;
     private int $timeout = self::DEFAULT_TIMEOUT;
+    public ?string $signedInfoSignature = null;
     private int $connectTimeout = self::DEFAULT_CONNECT_TIMEOUT;
 
     public function __construct($path, $pass, $security = 'SSL', $demo = false)

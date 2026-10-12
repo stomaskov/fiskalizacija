@@ -15,7 +15,7 @@
         "ext-curl": "*",
         "ext-bcmath": "*",
         "ext-xmlwriter": "*",
-        "nesbot/carbon": "^2.62.1"
+        "nesbot/carbon": "^2.62.1 || ^3.0"
     },
     "require-dev": {
         "mockery/mockery": "~1.5.1",
