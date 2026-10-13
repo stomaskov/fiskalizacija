@@ -125,7 +125,9 @@ class TransportExceptionTest extends \PHPUnit\Framework\TestCase
 
         // The CIS address is fixed at construction; the tests point it at a local socket.
         $property = new ReflectionProperty(Fiskalizacija::class, 'url');
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true); // a no-op since PHP 8.1, deprecated in 8.5
+        }
         $property->setValue($fis, $url);
 
         try {
